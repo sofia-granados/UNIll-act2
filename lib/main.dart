@@ -1,122 +1,161 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MiTiendaMascotas());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// 1. Clase Productos con los atributos solicitados
+class Productos {
+  final String titulo;
+  final String subtitulo;
+  final String imgUrl;
 
-  // This widget is the root of your application.
+  Productos({
+    required this.titulo,
+    required this.subtitulo,
+    required this.imgUrl,
+  });
+}
+
+class MiTiendaMascotas extends StatelessWidget {
+  const MiTiendaMascotas({super.key});
+
   @override
   Widget build(BuildContext context) {
+    // 2. Lista de diccionarios para cada tarjeta
+    final List<Map<String, String>> datosCoches = [
+      {
+        "titulo": "Cordero negro alimento húmedo en lata para perro 380gm",
+        "subtitulo": "\$99.00",
+        // Imagen actualizada para evitar el error de carga
+        "img": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=400&auto=format&fit=crop",
+      },
+      {
+        "titulo": "Croquetas de carne para perro marca premium 10kg",
+        "subtitulo": "\$139.00",
+        "img": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?q=80&w=400&auto=format&fit=crop",
+      },
+    ];
+
+    // Mapeo de diccionarios a objetos de la clase Productos
+    final List<Productos> listaProductos = datosCoches.map((item) {
+      return Productos(
+        titulo: item["titulo"]!,
+        subtitulo: item["subtitulo"]!,
+        imgUrl: item["img"]!,
+      );
+    }).toList();
+
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Pet Shop"),
+          backgroundColor: Colors.orange,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Título superior en naranja
+              const Text(
+                "INICIO",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+              // Columna de 2 filas con tarjetas
+              Column(
+                children: listaProductos.map((prod) {
+                  return Card(
+                    elevation: 4, // Sombreado
+                    margin: const EdgeInsets.only(bottom: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          // Imagen a la izquierda (con manejo de error)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              prod.imgUrl,
+                              width: 90,
+                              height: 90,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.pets, size: 50, color: Colors.grey),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          // Columna derecha con 2 filas (Título y Subtítulo)
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  prod.titulo,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  prod.subtitulo,
+                                  style: const TextStyle(color: Colors.orange, fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+              const SizedBox(height: 25),
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+              // Título Busca x categoría
+              const Text(
+                "BUSCA X CATEGORIA",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+              // Columna de categorías (4 filas)
+              _itemCategoria("perro", "https://cdn-icons-png.flaticon.com/128/620/620851.png"),
+              _itemCategoria("gatos", "https://cdn-icons-png.flaticon.com/128/616/616430.png"),
+              _itemCategoria("peces", "https://cdn-icons-png.flaticon.com/128/2613/2613702.png"),
+              _itemCategoria("aves", "https://cdn-icons-png.flaticon.com/128/1933/1933512.png"),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  // Widget para crear las filas de categorías rápidamente
+  Widget _itemCategoria(String nombre, String iconUrl) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Image.network(iconUrl, width: 35, height: 35),
+          const SizedBox(width: 15),
+          Text(
+            nombre.toUpperCase(),
+            style: const TextStyle(color: Colors.orange, fontSize: 17, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 }
